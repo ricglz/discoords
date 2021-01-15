@@ -6,6 +6,7 @@
   <version>0.1</version>
   <name>Discoords</name>
   <url>http://maven.apache.org</url>
+
   <build>
     <plugins>
       <plugin>
@@ -16,8 +17,22 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
   <repositories>
     <repository>
       <id>spigot-repo</id>
@@ -29,6 +44,7 @@
       <url>https://jcenter.bintray.com</url>
     </repository>
   </repositories>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -46,13 +62,18 @@
     <dependency>
       <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>4.2.0_227</version>
+      <version>4.2.0_206</version>
       <exclusions>
         <exclusion>
           <groupId>club.minnced</groupId>
           <artifactId>opus-java</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
     </dependency>
   </dependencies>
 </project>
