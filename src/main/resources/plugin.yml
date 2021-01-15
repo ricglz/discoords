@@ -6,11 +6,7 @@ version: 0.0.1
 commands:
     discoords:
         description: Main command for discoords
-        permission: discoords.discoords
-        usage: |
-          /&lt;command&gt; [label]
-          Example: /&lt;command&gt; - Send your current coordinates without a label
-          Example: /&lt;command&gt; mineshaft - Send your current coordinates with the mineshaft label
+        usage: /<command> [label]
 
 permissions:
   discoords.*:
