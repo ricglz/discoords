@@ -56,7 +56,8 @@ public final class Discoords extends JavaPlugin {
     }
 
     private void sendMessage(String sentMessage, String playerName) {
-        List<TextChannel> channels = jda.getTextChannelsByName("general", true);
+        String channelName = (String) getConfig().get("channel");
+        List<TextChannel> channels = jda.getTextChannelsByName(channelName, true);
         TextChannel channel = channels.get(0);
         String msg = String.format("%s - by %s", sentMessage, playerName);
         channel.sendMessage(msg).queue();
