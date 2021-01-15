@@ -2,7 +2,21 @@ name: Discoords
 description: Discoords, allows to send the current coordinates to a discord channel
 main: me.ricglz.discoords.Discoords
 version: 0.0.1
+
 commands:
     discoords:
         description: Main command for discoords
-        usage: /<command>
+        permission: discoords.discoords
+        usage: |
+          /&lt;command&gt; [label]
+          Example: /&lt;command&gt; - Send your current coordinates without a label
+          Example: /&lt;command&gt; mineshaft - Send your current coordinates with the mineshaft label
+
+permissions:
+  discoords.*:
+    description: Gives access to all discoords commands
+    children:
+      discoords.discoords: true
+  discoords.discoords:
+    description: Allows you to send your coordinates to discord
+    default: true
