@@ -1,7 +1,5 @@
 package me.ricglz.discoords;
 
-import java.util.List;
-
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.api.JDA;
@@ -17,14 +15,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Discoords extends JavaPlugin {
     JDABuilder builder;
     JDA jda;
+    TextChannel channel;
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
         String token = (String) getConfig().get("token");
+        String channelName = (String) getConfig().get("channel");
         try {
-            jda = JDABuilder.createDefault(token).build();
-        } catch (LoginException e) {
+            jda = JDABuilder.createDefault(token).build().awaitReady();
+            channel = jda.getTextChannelsByName(channelName, true).get(0);
+            channel.sendMessage("Server is up weebs!").queue();
+        } catch (LoginException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -37,13 +39,13 @@ public final class Discoords extends JavaPlugin {
                 return false;
             }
             if (jda == null) {
-                sender.sendMessage("It was not possible to login with Discord");
+                sender.sendMessage("Discoord is not available");
                 return true;
             }
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 Location loc = player.getLocation();
-                String locString = loc.toString();
+                String locString = String.format("(%d, %d, %d)", (int) loc.getX(), (int) loc.getY(), (int) loc.getZ());
                 String msg = args.length == 0 ? locString : String.format("%s - %s", locString, args[0]);
                 sender.sendMessage(msg);
                 sendMessage(msg, player.getDisplayName());
@@ -56,9 +58,6 @@ public final class Discoords extends JavaPlugin {
     }
 
     private void sendMessage(String sentMessage, String playerName) {
-        String channelName = (String) getConfig().get("channel");
-        List<TextChannel> channels = jda.getTextChannelsByName(channelName, true);
-        TextChannel channel = channels.get(0);
         String msg = String.format("%s - by %s", sentMessage, playerName);
         channel.sendMessage(msg).queue();
     }
