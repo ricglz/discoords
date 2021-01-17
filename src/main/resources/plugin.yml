@@ -1,7 +1,7 @@
 name: Discoords
 description: Discoords, allows to send the current coordinates to a discord channel
 main: me.ricglz.discoords.Discoords
-version: 0.0.1
+version: 0.1.1
 
 commands:
     discoords:
