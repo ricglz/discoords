@@ -1,2 +1,3 @@
+channel-id: 'Channel-ID'
 token: 'DISCORD-API-TOKEN'
-channel: 'general'
+welcome-message: 'Server is up!'
