@@ -7,6 +7,7 @@ package me.ricglz.discoords.exceptions;
  */
 public class InvalidWorldException extends Exception {
     private final String world;
+    private static final long serialVersionUID = 1L;
 
     public InvalidWorldException(final String world) {
         super("This world was invalid");
