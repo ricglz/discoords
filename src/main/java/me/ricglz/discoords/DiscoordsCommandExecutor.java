@@ -1,5 +1,6 @@
 package me.ricglz.discoords;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,28 +16,25 @@ public class DiscoordsCommandExecutor implements CommandExecutor {
         this.channel = channel;
     }
 
+    private void sendError(CommandSender sender, String error) {
+        sender.sendMessage(ChatColor.RED + String.format("[Error] %s", error));
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length > 1) {
-            sender.sendMessage("[Error] The command doesn't accept as many arguments");
-            return false;
-        }
         if (!(sender instanceof Player)) {
-            sender.sendMessage("[Error] You must be a player!");
-            return true;
+            sendError(sender, "You must be a player!");
+        } else if (channel == null) {
+            sendError(sender, "Discord is not available");
+        } else {
+            Player player = (Player) sender;
+            Location loc = player.getLocation();
+            String coordinateValues = String.join(" ", args);
+            String locString = String.format("(%d, %d, %d)", (int) loc.getX(), (int) loc.getY(), (int) loc.getZ());
+            String msg = coordinateValues.isEmpty() ? locString : String.format("%s - %s", locString, coordinateValues);
+            sender.sendMessage(msg);
+            sendLocation(msg, ChatColor.stripColor(player.getDisplayName()));
         }
-        if (channel == null) {
-            sender.sendMessage("[Error] Discoord is not available");
-            return true;
-        }
-
-        Player player = (Player) sender;
-        Location loc = player.getLocation();
-        String locString = String.format("(%d, %d, %d)", (int) loc.getX(), (int) loc.getY(), (int) loc.getZ());
-        String msg = args.length == 0 ? locString : String.format("%s - %s", locString, args[0]);
-        sender.sendMessage(msg);
-        sendLocation(msg, player.getDisplayName());
-
         return true;
     }
 
