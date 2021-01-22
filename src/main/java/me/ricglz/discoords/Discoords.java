@@ -21,11 +21,19 @@ public final class Discoords extends JavaPlugin {
     JDA jda;
     TextChannel channel;
     ClassLoader classLoader;
+    Coordinates coordinates;
+
     static final String COMMAND_PATH = "me.ricglz.discoords.commands";
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        coordinates = new Coordinates(getServer(), getDataFolder());
+        coordinates.reloadConfig();
+        enableDiscordAPI();
+    }
+
+    private void enableDiscordAPI() {
         String token = (String) getConfig().get("token");
         String channelID = (String) getConfig().get("channel-id");
         String welcomeMessage = (String) getConfig().get("welcome-message");
@@ -43,6 +51,10 @@ public final class Discoords extends JavaPlugin {
             return;
         }
         channel.sendMessage(welcomeMessage).queue();
+    }
+
+    public Coordinates getCoordinates() {
+        return coordinates;
     }
 
     private void sendError(CommandSender sender, String error) {

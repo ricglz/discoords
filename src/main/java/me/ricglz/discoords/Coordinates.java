@@ -18,34 +18,34 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 
 public class Coordinates {
-    private final Map<StringIgnoreCase, DiscoordsConf> coordinates = new HashMap<>();
-    private final File warpsFolder;
+    private final Map<StringIgnoreCase, DiscoordsConf> coordMap = new HashMap<>();
+    private final File coordsFolder;
     private final Server server;
 
     public Coordinates(final Server server, final File dataFolder) {
         this.server = server;
-        warpsFolder = new File(dataFolder, "warps");
-        if (!warpsFolder.exists()) {
-            warpsFolder.mkdirs();
+        coordsFolder = new File(dataFolder, "coords");
+        if (!coordsFolder.exists()) {
+            coordsFolder.mkdirs();
         }
         reloadConfig();
     }
 
     public boolean isEmpty() {
-        return coordinates.isEmpty();
+        return coordMap.isEmpty();
     }
 
     public Collection<String> getList() {
         final List<String> keys = new ArrayList<>();
-        for (final StringIgnoreCase filename : coordinates.keySet()) {
+        for (final StringIgnoreCase filename : coordMap.keySet()) {
             keys.add(filename.getString());
         }
         keys.sort(String.CASE_INSENSITIVE_ORDER);
         return keys;
     }
 
-    public Location getCoordinates(final String warp) throws CoordinatesNotFoundException, InvalidWorldException {
-        final DiscoordsConf conf = coordinates.get(new StringIgnoreCase(warp));
+    public Location getCoordinates(final String coords) throws CoordinatesNotFoundException, InvalidWorldException {
+        final DiscoordsConf conf = coordMap.get(new StringIgnoreCase(coords));
         if (conf == null) {
             throw new CoordinatesNotFoundException();
         }
@@ -60,14 +60,14 @@ public class Coordinates {
     public void setCoordinates(final String name, final Location loc) throws CoordinatesExistException, IOException {
         final String filename = sanitizeFileName(name);
         final StringIgnoreCase ignoreCaseName = new StringIgnoreCase(name);
-        DiscoordsConf conf = coordinates.get(ignoreCaseName);
+        DiscoordsConf conf = coordMap.get(ignoreCaseName);
         if (conf == null) {
-            final File confFile = new File(warpsFolder, filename + ".yml");
+            final File confFile = new File(coordsFolder, filename + ".yml");
             if (confFile.exists()) {
                 throw new CoordinatesExistException();
             }
             conf = new DiscoordsConf(confFile);
-            coordinates.put(ignoreCaseName, conf);
+            coordMap.put(ignoreCaseName, conf);
         }
         conf.setProperty(null, loc);
         conf.setProperty("name", name);
@@ -79,8 +79,8 @@ public class Coordinates {
     }
 
     public final void reloadConfig() {
-        coordinates.clear();
-        final File[] listOfFiles = warpsFolder.listFiles();
+        coordMap.clear();
+        final File[] listOfFiles = coordsFolder.listFiles();
         if (listOfFiles.length >= 1) {
             for (final File listOfFile : listOfFiles) {
                 final String filename = listOfFile.getName();
@@ -90,7 +90,7 @@ public class Coordinates {
                         conf.load();
                         final String name = conf.getString("name");
                         if (name != null) {
-                            coordinates.put(new StringIgnoreCase(name), conf);
+                            coordMap.put(new StringIgnoreCase(name), conf);
                         }
                     } catch (final Exception ex) {
                         continue;
