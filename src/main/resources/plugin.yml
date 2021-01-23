@@ -7,6 +7,12 @@ commands:
     discoords:
       description: Send your current coordinates to your discord channel
       usage: /<command> <message>
+    distance:
+      description: Gets the distance between two points
+      usage: |
+        /<command> <x> <y> <z> [<x2> <y2> <z2>]
+        /<command> 0 0 0. Will give you the distance between your current location and 0,0,0
+        /<command> 0 0 0 100 100 100. Will give you the distance between 0,0,0 and 100,100,100
     save-coords:
       description: Save your current coordinates to everyone to see it
       usage: /<command> <label>
