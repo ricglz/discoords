@@ -16,6 +16,9 @@ commands:
     save-coords:
       description: Save your current coordinates to everyone to see it
       usage: /<command> <label>
+    search-coords:
+      description: Search to see the current coordinates saved based on a label
+      usage: /<command> <label>
 
 permissions:
   discoords.*:
