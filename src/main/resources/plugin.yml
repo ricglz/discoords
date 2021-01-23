@@ -1,12 +1,24 @@
 name: Discoords
 description: Discoords, allows to send the current coordinates to a discord channel
 main: me.ricglz.discoords.Discoords
-version: 0.1.1
+version: 0.2.0
 
 commands:
     discoords:
-        description: Main command for discoords
-        usage: /<command> [label]
+      description: Send your current coordinates to your discord channel
+      usage: /<command> <message>
+    distance:
+      description: Gets the distance between two points
+      usage: |
+        /<command> <x> <y> <z> [<x2> <y2> <z2>]
+        /<command> 0 0 0. Will give you the distance between your current location and 0,0,0
+        /<command> 0 0 0 100 100 100. Will give you the distance between 0,0,0 and 100,100,100
+    save-coords:
+      description: Save your current coordinates to everyone to see it
+      usage: /<command> <label>
+    search-coords:
+      description: Search to see the current coordinates saved based on a label
+      usage: /<command> <label>
 
 permissions:
   discoords.*:
