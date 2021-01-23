@@ -22,10 +22,9 @@ import me.ricglz.discoords.exceptions.NotAPlayerError;
 public final class Discoords extends JavaPlugin {
     JDA jda;
     TextChannel channel;
-    ClassLoader classLoader;
     Coordinates coordinates;
 
-    static final String COMMAND_PATH = "me.ricglz.discoords.commands";
+    static final String COMMAND_PATH = "me.ricglz.discoords.commands.Command";
 
     @Override
     public void onEnable() {
@@ -59,6 +58,10 @@ public final class Discoords extends JavaPlugin {
         return coordinates;
     }
 
+    public TextChannel getTextChannel() {
+        return channel;
+    }
+
     private void sendError(CommandSender sender, String error) {
         sender.sendMessage(ChatColor.RED + String.format("[Error] %s", error));
     }
@@ -67,7 +70,8 @@ public final class Discoords extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         GeneralCommand cmd = null;
         try {
-            cmd = (GeneralCommand) classLoader.loadClass(COMMAND_PATH + command.getName()).newInstance();
+            getLogger().info(COMMAND_PATH + command.getName());
+            cmd = (GeneralCommand) this.getClassLoader().loadClass(COMMAND_PATH + label).newInstance();
         } catch (final Exception e) {
             sendError(sender, "Command was not loaded");
             getLogger().severe("Command was not loaded");
@@ -82,11 +86,9 @@ public final class Discoords extends JavaPlugin {
             } catch (final InvalidAmountOfArgumentsException ex) {
                 sender.sendMessage(command.getDescription());
                 sender.sendMessage(command.getUsage().replace("<command>", label));
-                if (!ex.getMessage().isEmpty()) {
-                    sender.sendMessage(ex.getMessage());
-                }
             } catch (final Exception ex) {
                 sendError(sender, ex.getMessage());
+                ex.printStackTrace();
             }
         }
         return true;

@@ -8,18 +8,16 @@ import org.bukkit.entity.Player;
 import me.ricglz.discoords.exceptions.DiscordNotAvailableException;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-public class DiscoordsCommand extends GeneralCommand {
+public class Commanddiscoords extends GeneralCommand {
     TextChannel channel;
 
-    public DiscoordsCommand() {
+    public Commanddiscoords() {
         super("discoords");
     }
 
     @Override
     public void run(Player sender, Command command, String label, String[] args) throws DiscordNotAvailableException {
-        if (channel == null) {
-            throw new DiscordNotAvailableException();
-        }
+        channel = discoords.getTextChannel();
         Location loc = sender.getLocation();
         String coordinateValues = String.join(" ", args);
         String locString = String.format("(%d, %d, %d)", (int) loc.getX(), (int) loc.getY(), (int) loc.getZ());

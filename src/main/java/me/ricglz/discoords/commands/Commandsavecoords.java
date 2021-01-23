@@ -10,8 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
-public class SaveCoordsCommand extends GeneralCommand {
-    public SaveCoordsCommand() {
+public class Commandsavecoords extends GeneralCommand {
+    public Commandsavecoords() {
         super("save-coords");
     }
 
