@@ -7,7 +7,7 @@ commands:
     discoords:
       description: Send your current coordinates to your discord channel
       usage: /<command> <message>
-    savecoords:
+    save-coords:
       description: Save your current coordinates to everyone to see it
       usage: /<command> <label>
 

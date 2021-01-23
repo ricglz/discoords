@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -69,9 +70,10 @@ public final class Discoords extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         GeneralCommand cmd = null;
+        String commandClassName = getCommandClassName(label);
         try {
-            getLogger().info(COMMAND_PATH + command.getName());
-            cmd = (GeneralCommand) this.getClassLoader().loadClass(COMMAND_PATH + label).newInstance();
+            cmd = (GeneralCommand) this.getClassLoader().loadClass(COMMAND_PATH + commandClassName).newInstance();
+            cmd.setDiscoords(this);
         } catch (final Exception e) {
             sendError(sender, "Command was not loaded");
             getLogger().severe("Command was not loaded");
@@ -84,6 +86,7 @@ public final class Discoords extends JavaPlugin {
                     throw new NotAPlayerError();
                 }
             } catch (final InvalidAmountOfArgumentsException ex) {
+                sendError(sender, ex.getMessage());
                 sender.sendMessage(command.getDescription());
                 sender.sendMessage(command.getUsage().replace("<command>", label));
             } catch (final Exception ex) {
@@ -92,5 +95,13 @@ public final class Discoords extends JavaPlugin {
             }
         }
         return true;
+    }
+
+    private String getCommandClassName(String label) {
+        StringBuilder builder = new StringBuilder();
+        for (String word : label.split("-")) {
+            builder.append(WordUtils.capitalize(word));
+        }
+        return builder.toString();
     }
 }

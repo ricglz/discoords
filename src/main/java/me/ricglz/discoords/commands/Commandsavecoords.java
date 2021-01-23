@@ -10,11 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
-public class Commandsavecoords extends GeneralCommand {
-    public Commandsavecoords() {
-        super("save-coords");
-    }
-
+public class CommandSaveCoords extends GeneralCommand {
     @Override
     public void run(Player sender, Command command, String label, String[] args) throws Exception {
         if (args.length == 0) {
@@ -34,5 +30,6 @@ public class Commandsavecoords extends GeneralCommand {
         }
 
         coords.setCoordinates(args[0], sender.getLocation());
+        sender.sendMessage("Coordinates saved!");
     }
 }
