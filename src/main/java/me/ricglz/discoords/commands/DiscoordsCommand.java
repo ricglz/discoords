@@ -3,7 +3,6 @@ package me.ricglz.discoords.commands;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.ricglz.discoords.exceptions.DiscordNotAvailableException;
@@ -17,18 +16,16 @@ public class DiscoordsCommand extends GeneralCommand {
     }
 
     @Override
-    public void run(CommandSender sender, Command command, String label, String[] args)
-            throws DiscordNotAvailableException {
+    public void run(Player sender, Command command, String label, String[] args) throws DiscordNotAvailableException {
         if (channel == null) {
             throw new DiscordNotAvailableException();
         }
-        Player player = (Player) sender;
-        Location loc = player.getLocation();
+        Location loc = sender.getLocation();
         String coordinateValues = String.join(" ", args);
         String locString = String.format("(%d, %d, %d)", (int) loc.getX(), (int) loc.getY(), (int) loc.getZ());
         String msg = coordinateValues.isEmpty() ? locString : String.format("%s - %s", locString, coordinateValues);
         sender.sendMessage(msg);
-        sendLocation(msg, ChatColor.stripColor(player.getDisplayName()));
+        sendLocation(msg, ChatColor.stripColor(sender.getDisplayName()));
     }
 
     /**

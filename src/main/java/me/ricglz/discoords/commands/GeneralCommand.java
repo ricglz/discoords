@@ -3,7 +3,7 @@ package me.ricglz.discoords.commands;
 import me.ricglz.discoords.Discoords;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public abstract class GeneralCommand {
     protected Discoords discoords;
@@ -21,7 +21,7 @@ public abstract class GeneralCommand {
         return name;
     }
 
-    public void run(CommandSender sender, Command command, String label, String[] args) throws Exception {
+    public void run(Player sender, Command command, String label, String[] args) throws Exception {
         throw new Exception("Command not yet implemented");
     }
 }

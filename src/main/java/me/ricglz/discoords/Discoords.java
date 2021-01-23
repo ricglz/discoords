@@ -9,10 +9,12 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.ricglz.discoords.commands.GeneralCommand;
 import me.ricglz.discoords.exceptions.InvalidAmountOfArgumentsException;
+import me.ricglz.discoords.exceptions.NotAPlayerError;
 
 /**
  * Main class for the Discoords plugin where the listeners are declared
@@ -72,7 +74,11 @@ public final class Discoords extends JavaPlugin {
         }
         if (cmd != null) {
             try {
-                cmd.run(sender, command, label, args);
+                if (sender instanceof Player) {
+                    cmd.run(((Player) sender), command, label, args);
+                } else {
+                    throw new NotAPlayerError();
+                }
             } catch (final InvalidAmountOfArgumentsException ex) {
                 sender.sendMessage(command.getDescription());
                 sender.sendMessage(command.getUsage().replace("<command>", label));
