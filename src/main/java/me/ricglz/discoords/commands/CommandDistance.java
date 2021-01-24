@@ -7,7 +7,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
-public class CommandDistance extends GeneralCommand {
+public class CommandDistance extends GeneralDistanceCommand {
     @Override
     public void run(Player sender, Command command, String label, String[] args)
             throws InvalidAmountOfArgumentsException {
@@ -30,11 +30,4 @@ public class CommandDistance extends GeneralCommand {
         return new Location(world, x, y, z);
     }
 
-    private int getDistance(Location point1, Location point2) {
-        double x = point1.getX() - point2.getX();
-        double y = point1.getY() - point2.getY();
-        double z = point1.getZ() - point2.getZ();
-
-        return (int) Math.sqrt(x * x + y * y + z * z);
-    }
 }
