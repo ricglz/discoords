@@ -1,5 +1,8 @@
 package me.ricglz.discoords;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.api.JDA;
@@ -67,10 +70,9 @@ public final class Discoords extends JavaPlugin {
         sender.sendMessage(ChatColor.RED + String.format("[Error] %s", error));
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    private GeneralCommand getGeneralCommand(Command command, CommandSender sender) {
         GeneralCommand cmd = null;
-        String commandClassName = getCommandClassName(label);
+        String commandClassName = getCommandClassName(command.getName());
         try {
             cmd = (GeneralCommand) this.getClassLoader().loadClass(COMMAND_PATH + commandClassName).newInstance();
             cmd.setDiscoords(this);
@@ -78,10 +80,16 @@ public final class Discoords extends JavaPlugin {
             sendError(sender, "Command was not loaded");
             getLogger().severe("Command was not loaded");
         }
+        return cmd;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        GeneralCommand cmd = getGeneralCommand(command, sender);
         if (cmd != null) {
             try {
                 if (sender instanceof Player) {
-                    cmd.run(((Player) sender), command, label, args);
+                    cmd.run((Player) sender, command, label, args);
                 } else {
                     throw new NotAPlayerError();
                 }
@@ -95,6 +103,25 @@ public final class Discoords extends JavaPlugin {
             }
         }
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        GeneralCommand cmd = getGeneralCommand(command, sender);
+        if (cmd == null) {
+            return Collections.emptyList();
+        }
+        try {
+            if (sender instanceof Player) {
+                return cmd.tabComplete(getServer(), (Player) sender, label, args);
+            } else {
+                throw new NotAPlayerError();
+            }
+        } catch (Exception ex) {
+            sendError(sender, ex.getMessage());
+            ex.printStackTrace();
+        }
+        return Collections.emptyList();
     }
 
     private String getCommandClassName(String label) {
