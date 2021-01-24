@@ -3,7 +3,7 @@
   <groupId>me.ricglz</groupId>
   <artifactId>Discoords</artifactId>
   <packaging>jar</packaging>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <name>Discoords</name>
   <url>http://maven.apache.org</url>
 
