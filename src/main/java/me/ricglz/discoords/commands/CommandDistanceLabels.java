@@ -22,9 +22,7 @@ public class CommandDistanceLabels extends GeneralDistanceCommand {
         final Coordinates coords = discoords.getCoordinates();
         Location point1 = coords.getCoordinates(args[0]);
         Location point2 = args.length == 1 ? sender.getLocation() : coords.getCoordinates(args[1]);
-        int distance = getDistance(point1, point2);
-        String message = String.format("The distance between the 2 points is %d units", distance);
-        sender.sendMessage(message);
+        getDistanceAndSendMessage(point1, point2, sender);
     }
 
     @Override

@@ -18,9 +18,7 @@ public class CommandDistance extends GeneralDistanceCommand {
         World world = sender.getWorld();
         Location point1 = createLocation(world, args, 0);
         Location point2 = args.length == 3 ? sender.getLocation() : createLocation(world, args, 3);
-        int distance = getDistance(point1, point2);
-        String message = String.format("The distance between the 2 points is %d units", distance);
-        sender.sendMessage(message);
+        getDistanceAndSendMessage(point1, point2, sender);
     }
 
     private Location createLocation(World world, String[] args, int start) {
