@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.bukkit.Location;
@@ -21,9 +22,11 @@ public class Coordinates {
     private final Map<StringIgnoreCase, DiscoordsConf> coordMap = new HashMap<>();
     private final File coordsFolder;
     private final Server server;
+    private final Logger logger;
 
-    public Coordinates(final Server server, final File dataFolder) {
+    public Coordinates(final Server server, final File dataFolder, Logger logger) {
         this.server = server;
+        this.logger = logger;
         coordsFolder = new File(dataFolder, "coords");
         if (!coordsFolder.exists()) {
             coordsFolder.mkdirs();
@@ -93,7 +96,7 @@ public class Coordinates {
                             coordMap.put(new StringIgnoreCase(name), conf);
                         }
                     } catch (final Exception ex) {
-                        continue;
+                        logger.severe(ex.getMessage());
                     }
                 }
             }

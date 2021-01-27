@@ -33,7 +33,7 @@ public final class Discoords extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
-        coordinates = new Coordinates(getServer(), getDataFolder());
+        coordinates = new Coordinates(getServer(), getDataFolder(), getLogger());
         coordinates.reloadConfig();
         enableDiscordAPI();
     }
