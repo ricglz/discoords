@@ -18,12 +18,23 @@ import java.util.regex.Pattern;
 import org.bukkit.Location;
 import org.bukkit.Server;
 
+/**
+ * Class to abstract the list of coordinates saved in the server.
+ */
 public class Coordinates {
     private final Map<StringIgnoreCase, DiscoordsConf> coordMap = new HashMap<>();
     private final File coordsFolder;
     private final Server server;
     private final Logger logger;
 
+    /**
+     * Public constructor to create the Coordinates instance
+     *
+     * @param server     The server instance of bukkit
+     * @param dataFolder The File instance of the folder to save the information of
+     *                   the coordinates
+     * @param logger     Logger instance of the application
+     */
     public Coordinates(final Server server, final File dataFolder, Logger logger) {
         this.server = server;
         this.logger = logger;
@@ -38,6 +49,10 @@ public class Coordinates {
         return coordMap.isEmpty();
     }
 
+    /**
+     *
+     * @return All stored coordinates as a Collection instance
+     */
     public Collection<String> getList() {
         final List<String> keys = new ArrayList<>();
         for (final StringIgnoreCase filename : coordMap.keySet()) {
@@ -47,6 +62,12 @@ public class Coordinates {
         return keys;
     }
 
+    /**
+     * @param coords Key name that was used to save the coordinates
+     * @return The location instance of the coordinates
+     * @throws CoordinatesNotFoundException
+     * @throws InvalidWorldException
+     */
     public Location getCoordinates(final String coords) throws CoordinatesNotFoundException, InvalidWorldException {
         final DiscoordsConf conf = coordMap.get(new StringIgnoreCase(coords));
         if (conf == null) {
@@ -60,6 +81,16 @@ public class Coordinates {
         return invalidFileChars.matcher(name.toLowerCase(Locale.ENGLISH)).replaceAll("_");
     }
 
+    /**
+     * Sets/Saves the coordinates by saving a file with the given name and writing
+     * there the coordinates
+     *
+     * @param name Name of the coordinates, this will probably also be the name of
+     *             the file
+     * @param loc  Location instance of the coordinates
+     * @throws CoordinatesExistException
+     * @throws IOException
+     */
     public void setCoordinates(final String name, final Location loc) throws CoordinatesExistException, IOException {
         final String filename = sanitizeFileName(name);
         final StringIgnoreCase ignoreCaseName = new StringIgnoreCase(name);
@@ -81,6 +112,9 @@ public class Coordinates {
         }
     }
 
+    /**
+     * Reloads the config folder to once again obtain the saved coordinates
+     */
     public final void reloadConfig() {
         coordMap.clear();
         final File[] listOfFiles = coordsFolder.listFiles();
@@ -107,6 +141,9 @@ public class Coordinates {
         return getList().size();
     }
 
+    /**
+     * Class used to abstract the comparison of string while ignoring the casing
+     */
     private static class StringIgnoreCase {
         private final String string;
 
