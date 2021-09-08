@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -23,6 +22,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.ricglz.discoords.exceptions.InvalidWorldException;
 
+/**
+ * Class used to handle the configuration file of the program
+ */
 public class DiscoordsConf extends YamlConfiguration {
     protected static final Logger LOGGER = Logger.getLogger("Discoords");
     protected final File configFile;
@@ -30,18 +32,26 @@ public class DiscoordsConf extends YamlConfiguration {
     private final byte[] bytebuffer = new byte[1024];
     protected static final Charset UTF8 = StandardCharsets.UTF_8;
 
+    /**
+     * @param configFile
+     */
     public DiscoordsConf(final File configFile) {
         super();
         this.configFile = configFile.getAbsoluteFile();
     }
 
+    /**
+     * Deletes files where the first character is 0, as in most cases they are
+     * broken.
+     */
     private synchronized void removedBrokenFiles() {
-        // This will delete files where the first character is 0. In most cases they are
-        // broken.
         if (configFile.exists() && configFile.length() != 0) {
             try (final InputStream input = new FileInputStream(configFile);) {
                 if (input.read() == 0) {
-                    configFile.delete();
+                    boolean success = configFile.delete();
+                    if (!success) {
+                        LOGGER.log(Level.SEVERE, "Not able to delete the file");
+                    }
                 }
             } catch (final IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
@@ -49,6 +59,27 @@ public class DiscoordsConf extends YamlConfiguration {
         }
     }
 
+    private ByteBuffer resizeBuffer(ByteBuffer buffer, FileInputStream inputStream) throws IOException {
+        int length;
+        while ((length = inputStream.read(bytebuffer)) != -1) {
+            if (length > buffer.remaining()) {
+                final ByteBuffer resize = ByteBuffer.allocate(buffer.capacity() + length - buffer.remaining());
+                final int resizePosition = buffer.position();
+                // Fix builds compiled against Java 9+ breaking on Java 8
+                buffer.rewind();
+                resize.put(buffer);
+                resize.position(resizePosition);
+                buffer = resize;
+            }
+            buffer.put(bytebuffer, 0, length);
+        }
+        buffer.rewind();
+        return buffer;
+    }
+
+    /**
+     * Loads the configuration file
+     */
     public synchronized void load() {
         if (pendingDiskWrites.get() != 0) {
             LOGGER.log(Level.INFO, "File {0} not read, because it''s not yet written to disk.", configFile);
@@ -71,26 +102,13 @@ public class DiscoordsConf extends YamlConfiguration {
                     throw new InvalidConfigurationException("File too big");
                 }
                 ByteBuffer buffer = ByteBuffer.allocate((int) startSize);
-                int length;
-                while ((length = inputStream.read(bytebuffer)) != -1) {
-                    if (length > buffer.remaining()) {
-                        final ByteBuffer resize = ByteBuffer.allocate(buffer.capacity() + length - buffer.remaining());
-                        final int resizePosition = buffer.position();
-                        // Fix builds compiled against Java 9+ breaking on Java 8
-                        ((Buffer) buffer).rewind();
-                        resize.put(buffer);
-                        resize.position(resizePosition);
-                        buffer = resize;
-                    }
-                    buffer.put(bytebuffer, 0, length);
-                }
-                ((Buffer) buffer).rewind();
+                buffer = resizeBuffer(buffer, inputStream);
                 final CharBuffer data = CharBuffer.allocate(buffer.capacity());
                 CharsetDecoder decoder = UTF8.newDecoder();
                 CoderResult result = decoder.decode(buffer, data, true);
                 if (result.isError()) {
-                    ((Buffer) buffer).rewind();
-                    ((Buffer) data).clear();
+                    buffer.rewind();
+                    buffer.clear();
                     String errorMsg = String.format("File %s is not utf-8 encoded, trying %s",
                             configFile.getAbsolutePath(), Charset.defaultCharset().displayName());
                     LOGGER.log(Level.INFO, errorMsg);
@@ -106,16 +124,21 @@ public class DiscoordsConf extends YamlConfiguration {
                     decoder.flush(data);
                 }
                 final int end = data.position();
-                ((Buffer) data).rewind();
+                data.rewind();
                 super.loadFromString(data.subSequence(0, end).toString());
             }
         } catch (final IOException ex) {
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (final InvalidConfigurationException ex) {
             final File broken = new File(configFile.getAbsolutePath() + ".broken." + System.currentTimeMillis());
-            configFile.renameTo(broken);
-            String errorMsg = String.format("The file %s is broken, it has been renamed to %s", configFile.toString(),
-                    broken.toString());
+            boolean success = configFile.renameTo(broken);
+            String errorMsg;
+            if (success) {
+                errorMsg = String.format("The file %s is broken, it has been renamed to %s", configFile.toString(),
+                        broken.toString());
+            } else {
+                errorMsg = "Unable to rename broken file";
+            }
             LOGGER.log(Level.SEVERE, errorMsg, ex.getCause());
         }
     }
